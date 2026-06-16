@@ -1,23 +1,18 @@
 function solveCauchyProblem()
     clc; close all;
 
-    % Define symbolic variables and ODE
     syms y(x)
     ode = diff(y, x) == (2 / (x^2 - 1)) * y + ((x - 1) / (x + 1)) * cos(x)^4;
     cond = y(0) == 0;
 
     try
-        % Solve symbolically
         solY = dsolve(ode, cond);
 
-        % Convert to numeric function
         solY_func = matlabFunction(solY);
 
-        % Avoid singularity at x = 1
         x_vals = linspace(0.1, 0.9, 100);
         x_vals = [x_vals, linspace(1.1, 5, 200)];
 
-        % Plot solution
         figure;
         plot(x_vals, solY_func(x_vals), 'LineWidth', 1.5);
         grid on;
@@ -28,18 +23,14 @@ function solveCauchyProblem()
         legend('Exact solution', 'Location', 'best');
 
     catch
-        % Numerical fallback using ode45
         ode_func = @(x, y) (2 / (x^2 - 1)) * y + ((x - 1) / (x + 1)) * cos(x)^4;
 
-        % Avoid singularity at x = 1
         [x1, y1] = ode45(ode_func, [0.1 0.9], 0);
         [x2, y2] = ode45(ode_func, [1.1 5], y1(end));
 
-        % Combine results
         x_vals = [x1; x2];
         y_vals = [y1; y2];
 
-        % Plot solution
         figure;
         plot(x_vals, y_vals, 'LineWidth', 1.5);
         grid on;
